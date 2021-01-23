@@ -1,42 +1,26 @@
-module.exports = function check(str, bracketsConfig) {
-  let str_length = str.length, number, add = [], checker, barter, nav = 0, nav_nav = 0;
-  console.log(str);
-  console.log(bracketsConfig);
-  let brackets_length = bracketsConfig.length;
-  if (str.length % 2 !== 0 || str.length === 0) return false;
-  for (let i = 0; i < str_length; i++) {
-    number = -1;
-    for (let j = 0; j < brackets_length; j++) {
-      if (str[i] === bracketsConfig[j][0]) number = j;
+module.exports = function check(str, config) {
+  if (typeof (str) !== "string" || str.split("").length % 2 !== 0) return false
+  var opPair = [], clPair = [], opStack = [], clStack = []
+  console.log(config)
+  console.log(str)
+  for (let key of config) {
+    opPair.push(key[0])
+    clPair.push(key[1])
+  }
+  let strMass = str.split("")
+  for (let key of strMass) {
+    if (opPair.indexOf(key) >= 0 && clPair.indexOf(key) < 0) { // OP [NonPair]
+      opStack.push(key)
     }
-    if (number === -1 && i === 0) return false;
-    if (number === -1) continue;
-    checker = 0;
-    barter = 0;
-    nav_nav = 0;
-    if (str[i] === bracketsConfig[number][1]) {
-      for (let k = 0; k < str_length; k++) {
-        if (str[k] === bracketsConfig[number][1]) nav_nav++;
-      }
-      console.log(`${str[i]} : ${nav_nav}`);
-      if (nav_nav % 2 === 0);
-      else return false;
+    if(opPair.indexOf(key) >= 0 && clPair.indexOf(key) >= 0){ // OP [Pair]!!!
+      if(opStack[opStack.length-1] === key) opStack.pop()
+      else opStack.push(key)
     }
-    else {
-      for (let j = i; j < str.length; j++) {
-        if (str[j] === bracketsConfig[number][0]) checker++;
-        else if (str[j] === bracketsConfig[number][1]) checker--;
-        barter++;
-        if (checker === 0) break;
-      }
-      if (checker !== 0) {
-        console.log(30);
-        console.log(str[i]);
-        console.log(checker);
-        return false;
-      }
-      if (barter % 2 !== 0) return false;
+    if(opPair.indexOf(key) < 0 && clPair.indexOf(key) >= 0){ // CL [NonPair]
+      if(opStack[opStack.length-1]===opPair[clPair.indexOf(key)]) opStack.pop()
+      else opStack.push(key)
     }
   }
-  return true;
+  if(opStack.length===0 && clStack.length===0) return true
+  else return false
 }
